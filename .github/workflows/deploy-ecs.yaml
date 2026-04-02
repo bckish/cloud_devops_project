@@ -1,4 +1,4 @@
-name: Deploy to ECS
+name: Deploy Frontend + Backend to ECS
 
 on:
   push:
@@ -7,18 +7,25 @@ on:
 
 env:
   AWS_REGION: eu-central-1
-  ECR_REPOSITORY: devops-app
+  BACKEND_REPO: devops-app-backend
+  FRONTEND_REPO: devops-app-frontend
   ECS_CLUSTER: devops-app-cluster
-  ECS_SERVICE: devops-app-service
+  BACKEND_SERVICE: devops-app-service
+  FRONTEND_SERVICE: devops-app-frontend-service
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+# =========================
+# Checkout
+# =========================
+      - uses: actions/checkout@v4
 
+# =========================
+# AWS Login
+# =========================
       - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -26,6 +33,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+# =========================
+# ECR Login
+# =========================
       - name: Login to ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
@@ -33,21 +43,62 @@ jobs:
       - name: Set image tag
         run: echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
 
-      - name: Build Docker image
-        run: docker build -t $ECR_REPOSITORY:$IMAGE_TAG -f app/backend/Dockerfile ./app
-
-      - name: Tag image
+# =========================
+# BACKEND BUILD & PUSH
+# =========================
+      - name: Build backend
         run: |
-          docker tag $ECR_REPOSITORY:$IMAGE_TAG \
-          ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t backend -f backend/Dockerfile backend/
 
-      - name: Push image to ECR
+      - name: Tag backend
         run: |
-          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag backend:latest \
+          ${{ steps.login-ecr.outputs.registry }}/$BACKEND_REPO:$IMAGE_TAG
 
-      - name: Deploy to ECS
+          docker tag backend:latest \
+          ${{ steps.login-ecr.outputs.registry }}/$BACKEND_REPO:latest
+
+      - name: Push backend
+        run: |
+          docker push ${{ steps.login-ecr.outputs.registry }}/$BACKEND_REPO:$IMAGE_TAG
+          docker push ${{ steps.login-ecr.outputs.registry }}/$BACKEND_REPO:latest
+
+# =========================
+# FRONTEND BUILD & PUSH
+# =========================
+      - name: Build frontend
+        run: |
+          docker build -t frontend -f frontend/Dockerfile .
+
+      - name: Tag frontend
+        run: |
+          docker tag frontend:latest \
+          ${{ steps.login-ecr.outputs.registry }}/$FRONTEND_REPO:$IMAGE_TAG
+
+          docker tag frontend:latest \
+          ${{ steps.login-ecr.outputs.registry }}/$FRONTEND_REPO:latest
+
+      - name: Push frontend
+        run: |
+          docker push ${{ steps.login-ecr.outputs.registry }}/$FRONTEND_REPO:$IMAGE_TAG
+          docker push ${{ steps.login-ecr.outputs.registry }}/$FRONTEND_REPO:latest
+
+# =========================
+# DEPLOY BACKEND
+# =========================
+      - name: Deploy backend
         run: |
           aws ecs update-service \
             --cluster $ECS_CLUSTER \
-            --service $ECS_SERVICE \
+            --service $BACKEND_SERVICE \
+            --force-new-deployment
+
+# =========================
+# DEPLOY FRONTEND
+# =========================
+      - name: Deploy frontend
+        run: |
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service $FRONTEND_SERVICE \
             --force-new-deployment

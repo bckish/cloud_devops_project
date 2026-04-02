@@ -1,7 +1,24 @@
-resource "aws_ecr_repository" "repo" {
-  name = var.project_name
+# =========================
+# Backend Repository
+# =========================
+resource "aws_ecr_repository" "backend" {
+  name = "${var.project_name}-backend"
 }
 
-output "repo_url" {
-  value = aws_ecr_repository.repo.repository_url
+# =========================
+# Frontend Repository
+# =========================
+resource "aws_ecr_repository" "frontend" {
+  name = "${var.project_name}-frontend"
+}
+
+# =========================
+# Outputs
+# =========================
+output "backend_repo_url" {
+  value = aws_ecr_repository.backend.repository_url
+}
+
+output "frontend_repo_url" {
+  value = aws_ecr_repository.frontend.repository_url
 }
