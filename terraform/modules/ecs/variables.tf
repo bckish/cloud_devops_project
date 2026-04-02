@@ -1,0 +1,9 @@
+variable "project_name" {}
+variable "subnets" {}
+variable "security_groups" {}
+variable "target_group_arn" {}
+variable "container_image" {}
+variable "execution_role_arn" {}
+variable "db_host" {}
+variable "db_user" {}
+variable "db_name" {}

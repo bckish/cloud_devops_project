@@ -1,0 +1,22 @@
+i# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+terraform.tfvars
+
+# Python
+__pycache__/
+*.pyc
+
+# Env
+.env
+
+# Docker
+*.log
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
