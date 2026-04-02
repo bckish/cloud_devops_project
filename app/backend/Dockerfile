@@ -14,7 +14,7 @@ ENV UV_COMPILE_BYTECODE=1
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#caching
 ENV UV_LINK_MODE=copy
 
-WORKDIR /app/backend
+WORKDIR /app/
 
 # Place executables in the environment at the front of the path
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#using-the-environment
@@ -27,11 +27,11 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --frozen --no-install-workspace --package app
 
-COPY ./scripts /app/backend/scripts
+COPY ./backend/scripts /app/backend/scripts
 
-COPY ./pyproject.toml ./alembic.ini /app/backend/
+COPY ./backend/pyproject.toml ./backend/alembic.ini /app/backend/
 
-COPY ./app /app/backend/app
+COPY ./backend/app /app/backend/app
 
 # Sync the project
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers

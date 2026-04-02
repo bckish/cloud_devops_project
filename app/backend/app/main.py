@@ -7,8 +7,8 @@ from app.api.main import api_router
 from app.core.config import settings
 
 
-def custom_generate_unique_id(route: APIRoute) -> str:
-    return f"{route.tags[0]}-{route.name}"
+def custom_generate_unique_id(route):
+    return f"{route.tags[0]}-{route.name}" if route.tags else route.name
 
 
 if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
@@ -32,6 +32,6 @@ if settings.all_cors_origins:
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
-@app.get("/")
-def root():
-    return {"message": "DevOps App is running 🚀"}
+@app.get("/", tags=["root"])
+def test():
+    return {"message": "ECS working 🚀"}
