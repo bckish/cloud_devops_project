@@ -8,7 +8,9 @@ Infrastructure is provisioned using Terraform, and CI/CD pipelines are implement
 
 ## :jigsaw: Architecture Diagram
 
-            
+<p align="center">
+  <img src="./images/cicd_aws_deployment.png" width="900"/>
+</p>
 
 ## :building_construction: Architecture Summary
 
