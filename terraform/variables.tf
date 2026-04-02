@@ -3,4 +3,9 @@ variable "project_name" { default = "devops-app" }
 variable "vpc_cidr" { default = "10.0.0.0/16" }
 
 variable "db_username" {}
-variable "db_password" {}
+#variable "db_password" {}
+variable "db_password" {
+  description = "Database password"
+  type        = string
+  sensitive   = true
+}

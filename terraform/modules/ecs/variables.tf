@@ -7,3 +7,8 @@ variable "execution_role_arn" {}
 variable "db_host" {}
 variable "db_user" {}
 variable "db_name" {}
+
+variable "db_password" {
+  description = "Database password"
+  type        = string
+}

@@ -35,14 +35,16 @@ module "ecs" {
   source = "./modules/ecs"
 
   project_name = var.project_name
-  subnets = module.vpc.private_subnets
+  #subnets = module.vpc.private_subnets
+  subnets = module.vpc.public_subnets
   security_groups = [module.vpc.ecs_sg]
 
   target_group_arn = module.alb.target_group_arn
   container_image = module.ecr.repo_url
   execution_role_arn = module.iam.ecs_role
-  db_host = module.rds.db_endpoint   
-  db_user = var.db_username          
+  db_host = split(":", module.rds.db_endpoint)[0]   
+  db_user = var.db_username
+  db_password = var.db_password          
   db_name = "app"  
 }
 
