@@ -58,10 +58,18 @@ resource "aws_security_group" "ecs" {
   vpc_id = aws_vpc.main.id
 
   ingress {
-    from_port       = 8000     # Backend port
+    description     = "Allow ALB to backend"
+    from_port       = 8000     
     to_port         = 8000
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]  # Only ALB can access
+  }
+  ingress {
+    description     = "Allow ALB to frontend"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
   }
 
   egress {
