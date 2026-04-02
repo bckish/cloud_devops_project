@@ -48,7 +48,7 @@ jobs:
 # =========================
       - name: Build backend
         run: |
-          docker build -t backend -f backend/Dockerfile backend/
+          docker build -t backend -f app/backend/Dockerfile app/backend/
 
       - name: Tag backend
         run: |
@@ -68,7 +68,7 @@ jobs:
 # =========================
       - name: Build frontend
         run: |
-          docker build -t frontend -f frontend/Dockerfile .
+          docker build -t frontend -f app/frontend/Dockerfile app/
 
       - name: Tag frontend
         run: |
